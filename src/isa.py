@@ -2,11 +2,10 @@ import json
 from enum import Enum
 
 
-class Term:
-    def __init__(self, line: int, pos: int, symbol: str):
-        self.line = line
-        self.pos = pos
-        self.symbol = symbol
+class Word:
+    def __init__(self, index: int, data: int):
+        self.index: int = index
+        self.data: int = data
 
 
 class Addressing(Enum):
@@ -15,6 +14,7 @@ class Addressing(Enum):
     LOAD = 2
     POST_INC = 3
     POST_DEC = 4
+    NONE = 5
 
 
 class Opcode(str, Enum):
@@ -35,11 +35,11 @@ class Opcode(str, Enum):
 
 
 class Code:
-    def __init__(self, index: int, opcode: Opcode, arg: str = None, term: Term = None):
+    def __init__(self, index: int, opcode: Opcode, arg: str | None = None, addressing: Addressing = Addressing.DIRECT):
         self.index = index
         self.opcode = opcode
         self.arg = arg
-        self.term = term
+        self.addressing = addressing
 
 
 class CodeEncoder(json.JSONEncoder):
@@ -47,4 +47,17 @@ class CodeEncoder(json.JSONEncoder):
         if isinstance(obj, Code):
             return obj.__dict__
         return json.JSONEncoder.default(self, obj)
+
+
+class WordEncoder(json.JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, Word):
+            return obj.__dict__
+        return json.JSONEncoder.default(self, obj)
+
+    class AddressingEncoder(json.JSONEncoder):
+        def default(self, obj):
+            if isinstance(obj, Addressing):
+                return obj.__dict__
+            return json.JSONEncoder.default(self, obj)
 

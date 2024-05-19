@@ -1,7 +1,10 @@
 BEGIN:
-    LOAD [MSG]+
-    ST [1]; OUT MEM
-    JNZ BEGIN
+    LOAD #MSG
+    ST PTR
+LOOP:
+    LOAD [PTR]+
+    ST 0x001; OUT MEM
+    JNZ LOOP
     HALT
 
 MSG:
@@ -10,5 +13,5 @@ MSG:
     WORD 108
     WORD 108
     WORD 111
-END:
-    HALT
+PTR:
+    WORD 0
