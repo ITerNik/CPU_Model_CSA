@@ -1,0 +1,31 @@
+V0: WORD INPUT_INT
+
+PTR: WORD 0
+MSG: WORD 0
+
+BEGIN:
+    LOAD #MSG
+    ST PTR
+
+INPUT:
+    JNZ INPUT
+
+    CALL PRINT
+    HALT
+
+INPUT_INT:
+    DI
+    LOAD [2] ; IN MEM
+    ST [PTR]+
+    EI
+    IRET
+
+PRINT:
+LOOP:
+    LOAD [PTR]+
+
+    JZ END
+    ST [1] : OUT MEM
+    JUMP LOOP
+END:
+    RET
