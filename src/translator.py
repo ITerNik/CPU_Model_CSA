@@ -1,12 +1,12 @@
 import json
 import sys
 
-from isa import Word, Code, Opcode, CodeEncoder, WordEncoder, Addressing
+from isa import Code, Opcode, CodeEncoder, Addressing, MachineCode, MachineCodeEncoder
 
 
 def translate(text: str):
     code: list[Code] = []
-    data = []
+    data: list[int] = []
     labels: dict[str, int] = {}
     words: dict[str, int] = {}
     prog_position: int = 0
@@ -31,7 +31,7 @@ def translate(text: str):
                 if last_label not in words:
                     labels[last_label] = data_position
                     words[last_label] = data_position
-            data.append(Word(data_position, word_data))
+            data.append(word_data)
             data_position += 1
         elif " " in token:
             sub_tokens = token.split(" ")
@@ -44,7 +44,7 @@ def translate(text: str):
             opcode = Opcode(token)
             code.append(Code(prog_position, opcode))
             prog_position += 1
-    return second_stage(code, labels), data
+    return MachineCode(second_stage(code, labels), data)
 
 
 def second_stage(code: list[Code], labels: dict[str, int]):
@@ -62,7 +62,7 @@ def second_stage(code: list[Code], labels: dict[str, int]):
             elif label.startswith('#'):
                 addressing = Addressing.LOAD
             label = label.strip('#[]+-')
-            instruction.addressing = addressing
+            instruction.addressing = addressing.value
             try:
                 instruction.arg = str(parse_number(label))
                 continue
@@ -80,11 +80,22 @@ def parse_number(label: str) -> int:
         return int(label)
 
 
+def write_code(filename: str, code: MachineCode):
+    with open(filename, "w", encoding="utf-8") as file:
+        buf = []
+        data = map(str, code.data)
+        for instr in code.code:
+            buf.append(json.dumps(instr, cls=CodeEncoder))
+        file.write(json.dumps(code, cls=MachineCodeEncoder, indent=4))
+
+
 def main(source: str, target: str):
     with open(source, encoding="utf-8") as f:
         source_text = f.read()
 
-    code, data = translate(source_text)
+    code = translate(source_text)
+
+    write_code(target, code)
 
 
 if __name__ == '__main__':

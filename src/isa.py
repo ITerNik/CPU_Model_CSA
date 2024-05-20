@@ -35,11 +35,16 @@ class Opcode(str, Enum):
 
 
 class Code:
-    def __init__(self, index: int, opcode: Opcode, arg: str | None = None, addressing: Addressing = Addressing.DIRECT):
+    def __init__(self, index: int, opcode: Opcode, arg: str | None = None, addressing: int = 0):
         self.index = index
         self.opcode = opcode
         self.arg = arg
         self.addressing = addressing
+
+class MachineCode:
+    def __init__(self, code: list[Code], data: list[int]):
+        self.code: list[Code] = code
+        self.data: list[int] = data
 
 
 class CodeEncoder(json.JSONEncoder):
@@ -49,15 +54,11 @@ class CodeEncoder(json.JSONEncoder):
         return json.JSONEncoder.default(self, obj)
 
 
-class WordEncoder(json.JSONEncoder):
+class MachineCodeEncoder(json.JSONEncoder):
     def default(self, obj):
-        if isinstance(obj, Word):
-            return obj.__dict__
+        if isinstance(obj, MachineCode):
+            buf = []
+            for code in obj.code:
+                buf.append(code.__dict__)
+            return {"code": buf, "data": obj.data}
         return json.JSONEncoder.default(self, obj)
-
-    class AddressingEncoder(json.JSONEncoder):
-        def default(self, obj):
-            if isinstance(obj, Addressing):
-                return obj.__dict__
-            return json.JSONEncoder.default(self, obj)
-
