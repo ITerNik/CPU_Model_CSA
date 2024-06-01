@@ -8,7 +8,7 @@
 - ```*``` - встречается 0 или более раз
 - ```+``` - встречается 1 или более раз
 ```
-    <program> ::= <line> | <line> <program>
+<program> ::= <line> | <line> <program>
 
 <no_arg_op> ::= "HALT"
                 | "EI"
@@ -18,6 +18,8 @@
 
 <arg_op> ::= "LOAD"
             | "ST"
+            | "ADD"
+            | "CMP"
             | "JUMP"
             | "JZ"
             | "JNZ"

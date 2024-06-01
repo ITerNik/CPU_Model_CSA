@@ -1,7 +1,7 @@
 import json
 import sys
 
-from isa import Code, Opcode, CodeEncoder, Addressing, MachineCode, MachineCodeEncoder
+from isa import Code, Opcode, Addressing, MachineCode, MachineCodeEncoder
 
 
 def translate(text: str):
@@ -82,10 +82,6 @@ def parse_number(label: str) -> int:
 
 def write_code(filename: str, code: MachineCode):
     with open(filename, "w", encoding="utf-8") as file:
-        buf = []
-        data = map(str, code.data)
-        for instr in code.code:
-            buf.append(json.dumps(instr, cls=CodeEncoder))
         file.write(json.dumps(code, cls=MachineCodeEncoder, indent=4))
 
 
