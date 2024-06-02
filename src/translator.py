@@ -5,11 +5,11 @@ from isa import Code, Opcode, Addressing, MachineCode, MachineCodeEncoder
 
 
 def translate(text: str):
-    code: list[Code] = []
+    code: list[Code] = [Code(0, Opcode.NOP), Code(1, Opcode.NOP)]
     data: list[int] = []
     labels: dict[str, int] = {}
     words: dict[str, int] = {}
-    prog_position: int = 0
+    prog_position: int = 2
     data_position: int = 4
     last_label: str = ''
 
@@ -33,6 +33,15 @@ def translate(text: str):
                     words[last_label] = data_position
             data.append(word_data)
             data_position += 1
+
+        elif token.startswith("VEC"):
+            sub_tokens = token.split(" ")
+            assert len(sub_tokens) == 3, "Invalid vector format"
+            mnemonic, vec, arg = sub_tokens
+            vec_data = int(vec)
+            assert vec_data in {0, 1}, "Invalid vector"
+            code[vec_data].arg = arg
+
         elif " " in token:
             sub_tokens = token.split(" ")
             assert len(sub_tokens) == 2, "Invalid instruction: {}".format(token)
@@ -42,7 +51,7 @@ def translate(text: str):
             prog_position += 1
         else:
             opcode = Opcode(token)
-            code.append(Code(prog_position, opcode))
+            code.append(Code(prog_position, opcode, addressing=Addressing.NONE.value))
             prog_position += 1
     return MachineCode(second_stage(code, labels), data)
 

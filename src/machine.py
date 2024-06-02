@@ -5,24 +5,23 @@ from enum import Enum
 
 from isa import MachineCode, Code, Opcode, Addressing
 
-
-ADDRESS_LENGTH = 2**24
-WORD_LENGTH = 2**32
+MEMORY_START = 4
 
 
 class ALUOptions(Enum):
     LEFT_ZERO = 0,
     RIGHT_ZERO = 1,
-    NEG_LEFT = 2,
-    NEG_RIGHT = 3,
-    INC = 4
+    NOT_LEFT = 2,
+    NOT_RIGHT = 3,
+    INC = 4,
+    DEC = 5
 
 
 class DataPath:
     def __init__(self, data_memory, data_memory_size, input_buffer):
-        assert data_memory_size > len(data_memory) + 4, "Data_memory size is not enough"
+        assert data_memory_size > len(data_memory) + MEMORY_START, "Data_memory size is not enough"
         self.data_memory_size = data_memory_size
-        self.data_memory = [0] * 4 + data_memory + [0] * (data_memory_size - len(data_memory) - 4)
+        self.data_memory = [0] * MEMORY_START + data_memory + [0] * (data_memory_size - len(data_memory) - MEMORY_START)
         self.ar = 0
         self.acc = 0
         self.dr = 0
@@ -30,9 +29,8 @@ class DataPath:
         self.input_buffer = input_buffer
         self.output_buffer = []
 
-    def signal_latch_ar(self, sel: int, options=[]):
-        sel_addr = Addressing(sel)
-        if sel_addr is not Addressing.NONE:
+    def signal_latch_ar(self, sel_cr=True, options=[]):
+        if sel_cr:
             assert self.cr.arg is not None, 'Internal error'
             self.ar = int(self.cr.arg)
         else:
@@ -51,18 +49,23 @@ class DataPath:
             left = 0
         if ALUOptions.RIGHT_ZERO in options:
             right = 0
-        if ALUOptions.NEG_LEFT in options:
-            left = -left
-        if ALUOptions.NEG_RIGHT in options:
-            right = -right
+        if ALUOptions.NOT_LEFT in options:
+            left = ~left
+        if ALUOptions.NOT_RIGHT in options:
+            right = ~right
         if ALUOptions.INC in options:
             left += 1
+        elif ALUOptions.DEC in options:
+            left -= 1
 
         return left + right
 
     def signal_data_out(self):
         if self.ar == 1:
-            self.output_buffer.append(chr(self.dr))
+            if 0 <= self.dr <= 256 :
+                self.output_buffer.append(chr(self.dr))
+            else:
+                self.output_buffer.append(str(self.dr))
         self.data_memory[self.ar] = self.dr
         # logging.debug("input: %s", repr(symbol))
 
@@ -88,8 +91,9 @@ class DataPath:
 
 class ControlUnit:
     def __init__(self, program_memory: list[Code], data_path: DataPath):
+        self.ei = True
         self.program_memory: list[Code] = program_memory
-        self.pc = 0
+        self.pc = 2
         self.sp = 0
         self.call_stack: list[int] = []
         self.data_path: DataPath = data_path
@@ -103,6 +107,53 @@ class ControlUnit:
 
     def current_tick(self):
         return self._tick
+
+    def address_fetch(self, instr: Code):
+        addr = Addressing(instr.addressing)
+        if addr is Addressing.NONE:
+            return
+        assert instr.arg is not None, 'Internal error'
+        if addr is Addressing.DIRECT:
+            self.data_path.signal_latch_ar()
+            self.tick()
+
+            self.data_path.signal_data_in()
+            self.tick()
+        elif addr is Addressing.LOAD:
+            self.data_path.dr = int(instr.arg)
+            self.tick()
+        elif addr is Addressing.INDIRECT:
+            self.data_path.signal_latch_ar()
+            self.tick()
+
+            self.data_path.signal_data_in()
+            self.tick()
+
+            self.data_path.signal_latch_ar(False, [ALUOptions.RIGHT_ZERO])
+            self.tick()
+
+            self.data_path.signal_data_in()
+            self.tick()
+
+        elif addr in {Addressing.POST_INC, Addressing.POST_DEC}:
+            self.data_path.signal_latch_ar()
+            self.tick()
+
+            self.data_path.signal_data_in()
+            self.tick()
+
+            self.data_path.signal_latch_dr([ALUOptions.RIGHT_ZERO,
+                                            ALUOptions.INC if addr is Addressing.POST_INC else ALUOptions.DEC],
+                                           select_data=False)
+            self.tick()
+
+            self.data_path.signal_data_out()
+            self.data_path.signal_latch_ar(False, [ALUOptions.RIGHT_ZERO,
+                                                   ALUOptions.DEC if addr is Addressing.POST_INC else ALUOptions.INC])
+            self.tick()
+
+            self.data_path.signal_data_in()
+            self.tick()
 
     def signal_latch_pc(self, sel: Opcode):
         if sel in {Opcode.JZ, Opcode.JBE, Opcode.JUMP, Opcode.JEV, Opcode.JNZ}:
@@ -124,13 +175,15 @@ class ControlUnit:
         self.data_path.cr = self.program_memory[self.pc]
 
     def decode_and_execute_control_flow_instruction(self, instr: Code):
+        assert instr.addressing not in {Addressing.POST_INC,
+                                        Addressing.POST_DEC,
+                                        Addressing.INDIRECT}, 'Control flow instruction addressing conflict'
         opcode: Opcode = Opcode(instr.opcode)
+
         if opcode is Opcode.HALT:
             raise StopIteration()
 
         if opcode is Opcode.JUMP:
-            addr = instr.arg
-            assert addr is not None, 'Internal error'
             self.signal_latch_pc(opcode)
             self.tick()
 
@@ -141,7 +194,6 @@ class ControlUnit:
                 self.signal_latch_pc(opcode)
 
             self.tick()
-
             return True
 
         if opcode is Opcode.JNZ:
@@ -150,65 +202,77 @@ class ControlUnit:
 
             self.tick()
 
-            self.signal_latch_pc(Opcode.NOP)
+            return True
+
+        if opcode is Opcode.JBE:
+            if self.be:
+                self.signal_latch_pc(opcode)
+
+            self.tick()
+
+            return True
+
+        if opcode is Opcode.JEV:
+            if self.data_path.even():
+                self.signal_latch_pc(opcode)
+
+            self.tick()
 
             return True
 
         return False
 
     def decode_and_execute_instruction(self):
-        """Основной цикл процессора. Декодирует и выполняет инструкцию.
-
-        Обработка инструкции:
-
-        1. Проверить `Opcode`.
-
-        2. Вызвать методы, имитирующие необходимые управляющие сигналы.
-
-        3. Продвинуть модельное время вперёд на один такт (`tick`).
-
-        4. (если необходимо) повторить шаги 2-3.
-
-        5. Перейти к следующей инструкции.
-
-        Обработка функций управления потоком исполнения вынесена в
-        `decode_and_execute_control_flow_instruction`.
-        """
-
         self.signal_cur_instr()
         instr = self.data_path.cr
         opcode = Opcode(instr.opcode)
 
         if self.decode_and_execute_control_flow_instruction(instr):
+            self.handle_int()
             return
 
-        if opcode is Opcode.LOAD:
-            self.data_path.signal_latch_ar(instr.addressing)
-            self.tick()
+        self.address_fetch(instr)
 
-            self.data_path.signal_data_in()
+        if opcode is Opcode.LOAD:
             self.data_path.signal_latch_acc([ALUOptions.RIGHT_ZERO])
             self.tick()
 
         elif opcode is Opcode.ST:
-            self.data_path.signal_latch_ar(instr.addressing)
-            self.tick()
-
             self.data_path.signal_latch_dr([ALUOptions.LEFT_ZERO], select_data=False)
             self.data_path.signal_data_out()
             self.tick()
+        elif opcode is Opcode.NOP:
+            pass
+        elif opcode is Opcode.DI:
+            self.ei = False
+        elif opcode is Opcode.EI:
+            self.ei = True
+        elif opcode in {Opcode.IRET, Opcode.RET}:
+            assert len(self.call_stack) > 0, "Internal error"
+            self.pc = self.call_stack.pop()
+            if opcode is Opcode.IRET:
+                self.ei = True
+        elif opcode is Opcode.CALL:
+            self.call_stack.append(self.pc)
+            self.pc = int(instr.arg) - 1
+        elif opcode is Opcode.ADD:
+            self.data_path.signal_latch_acc([])
+        elif opcode is Opcode.CMP:
+            tmp = self.data_path.acc
+            self.data_path.signal_latch_acc([ALUOptions.NOT_LEFT, ALUOptions.INC])
+            self.be = not self.data_path.negative()
+            self.data_path.acc = tmp
         else:
             raise ValueError(f"Invalid opcode {opcode}")
 
-        self.signal_latch_pc(opcode)
+        self.handle_int()
 
     def __repr__(self):
-        """Вернуть строковое представление состояния процессора."""
         state_repr = "TICK: {:3} PC: {:3} ADDR: {:3} MEM_OUT: {} ACC: {}".format(
             self._tick,
-            self.program_counter,
-            self.data_path.data_address,
-            self.data_path.data_memory[self.data_path.data_address],
+            self.pc,
+            self.data_path.ar,
+            self.data_path.data_memory[self.data_path.ar],
             self.data_path.acc,
         )
 
@@ -225,6 +289,15 @@ class ControlUnit:
 
         return "{} \t{}".format(state_repr, instr_repr)
 
+    def handle_int(self):
+        if self.ei and len(self.data_path.input_buffer) > 0 and self.data_path.input_buffer[-1][0] <= self.current_tick():
+            self.int_vec = 0
+            self.data_path.data_memory[0] = ord(self.data_path.input_buffer.pop()[1])
+            self.ei = False
+            self.call_stack.append(self.pc)
+            self.pc = int(self.program_memory[self.int_vec].arg) - 1
+        self.signal_latch_pc(Opcode.NOP)
+
 
 def simulation(code, input_tokens, data_memory, data_memory_size, limit):
     data_path = DataPath(data_memory, data_memory_size, input_tokens)
@@ -237,7 +310,7 @@ def simulation(code, input_tokens, data_memory, data_memory_size, limit):
             control_unit.decode_and_execute_instruction()
             instr_counter += 1
             # logging.debug("%s", control_unit)
-    except StopIteration:
+    except (StopIteration, EOFError):
         pass
 
     if instr_counter >= limit:
@@ -247,13 +320,13 @@ def simulation(code, input_tokens, data_memory, data_memory_size, limit):
 
 
 def main(code_file, input_file):
-    with open(code_file, encoding="utf-8") as file:
+    with (open(code_file, encoding="utf-8") as file):
         code = json.loads(file.read())
         machine_code = MachineCode(list(map(lambda d: Code(**d), code['code'])), code['data'])
-    with open(input_file,  encoding="utf-8") as file:
-        input_text = sorted(json.loads(file.read()))
+    with open(input_file, encoding="utf-8") as file:
+        input_text = sorted(json.loads(file.read()), reverse=True)
 
-    print(simulation(machine_code.code, input_text, machine_code.data, 256, 100))
+    print(simulation(machine_code.code, input_text, machine_code.data, 256, 500))
 
 
 if __name__ == "__main__":

@@ -1,7 +1,9 @@
-V0: WORD INPUT_INT
+VEC 0 INPUT_INT
 
-PTR: WORD 0
-MSG: WORD 0
+PTR:
+    WORD 0
+MSG:
+    WORD 0
 
 BEGIN:
     LOAD #MSG
@@ -11,21 +13,21 @@ INPUT:
     JNZ INPUT
 
     CALL PRINT
+END:
     HALT
 
 INPUT_INT:
-    DI
-    LOAD [2] ; IN MEM
+    LOAD 1 ; IN MEM
     ST [PTR]+
-    EI
     IRET
 
 PRINT:
+    LOAD #MSG
+    ST PTR
 LOOP:
     LOAD [PTR]+
 
     JZ END
-    ST [1] : OUT MEM
+    ST 1 : OUT MEM
     JUMP LOOP
-END:
     RET

@@ -18,6 +18,8 @@ class Addressing(Enum):
 
 
 class Opcode(str, Enum):
+    CMP = 'CMP'
+    ADD = 'ADD'
     NOP = 'NOP'
     HALT = 'HALT'
     EI = 'EI'

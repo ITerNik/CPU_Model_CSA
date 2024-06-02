@@ -1,4 +1,5 @@
 BEGIN:
+    DI
     LOAD #MSG
     ST PTR
 LOOP:
@@ -13,5 +14,6 @@ MSG:
     WORD 108
     WORD 108
     WORD 111
+    WORD 0
 PTR:
     WORD 0
