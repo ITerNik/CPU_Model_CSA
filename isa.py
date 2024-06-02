@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import json
 from enum import Enum
 
@@ -18,22 +20,22 @@ class Addressing(Enum):
 
 
 class Opcode(str, Enum):
-    CMP = 'CMP'
-    ADD = 'ADD'
-    NOP = 'NOP'
-    HALT = 'HALT'
-    EI = 'EI'
-    DI = 'DI'
-    RET = 'RET'
-    ST = 'ST'
-    JUMP = 'JUMP'
-    LOAD = 'LOAD'
-    JZ = 'JZ'
-    JNZ = 'JNZ'
-    JBE = 'JBE'
-    JEV = 'JEV'
-    CALL = 'CALL'
-    IRET = 'IRET'
+    CMP = "CMP"
+    ADD = "ADD"
+    NOP = "NOP"
+    HALT = "HALT"
+    EI = "EI"
+    DI = "DI"
+    RET = "RET"
+    ST = "ST"
+    JUMP = "JUMP"
+    LOAD = "LOAD"
+    JZ = "JZ"
+    JNZ = "JNZ"
+    JBE = "JBE"
+    JEV = "JEV"
+    CALL = "CALL"
+    IRET = "IRET"
 
 
 class Code:
@@ -42,6 +44,7 @@ class Code:
         self.opcode = opcode
         self.arg = arg
         self.addressing = addressing
+
 
 class MachineCode:
     def __init__(self, code: list[Code], data: list[int]):

@@ -1,9 +1,11 @@
+from __future__ import annotations
+
 import json
 import logging
 import sys
 from enum import Enum
 
-from isa import MachineCode, Code, Opcode, Addressing
+from isa import Addressing, Code, MachineCode, Opcode
 
 MEMORY_START = 4
 DATA_MEMORY_SIZE = 2**16
@@ -11,11 +13,11 @@ INSTR_LIMIT = 500
 
 
 class ALUOptions(Enum):
-    LEFT_ZERO = 0,
-    RIGHT_ZERO = 1,
-    NOT_LEFT = 2,
-    NOT_RIGHT = 3,
-    INC = 4,
+    LEFT_ZERO = 0
+    RIGHT_ZERO = 1
+    NOT_LEFT = 2
+    NOT_RIGHT = 3
+    INC = 4
     DEC = 5
 
 
@@ -33,7 +35,7 @@ class DataPath:
 
     def signal_latch_ar(self, options=None):
         if options is None:
-            assert self.cr.arg is not None, 'Internal error'
+            assert self.cr.arg is not None, "Internal error"
             self.ar = int(self.cr.arg)
         else:
             self.ar = self.process_alu(options)
@@ -74,7 +76,7 @@ class DataPath:
     def signal_data_in(self):
         if self.ar == 0:
             if len(self.input_buffer) <= 0:
-                raise EOFError('End of input')
+                raise EOFError()
             self.dr = ord(self.input_buffer.pop()[1])
             logging.debug("input: %s", repr(self.data_memory[0]))
         else:
@@ -119,7 +121,7 @@ class ControlUnit:
         addr = Addressing(instr.addressing)
         if addr is Addressing.NONE:
             return
-        assert instr.arg is not None, 'Internal error {} {}'.format(instr.opcode, instr.index)
+        assert instr.arg is not None, "Internal error {} {}".format(instr.opcode, instr.index)
         if addr is Addressing.DIRECT:
             self.data_path.signal_latch_ar()
             self.tick()
@@ -149,13 +151,15 @@ class ControlUnit:
             self.data_path.signal_data_in()
             self.tick()
 
-            self.data_path.signal_latch_dr([ALUOptions.RIGHT_ZERO,
-                                            ALUOptions.INC if addr is Addressing.POST_INC else ALUOptions.DEC])
+            self.data_path.signal_latch_dr(
+                [ALUOptions.RIGHT_ZERO, ALUOptions.INC if addr is Addressing.POST_INC else ALUOptions.DEC]
+            )
             self.tick()
 
             self.data_path.signal_data_out()
-            self.data_path.signal_latch_ar([ALUOptions.RIGHT_ZERO,
-                                                   ALUOptions.DEC if addr is Addressing.POST_INC else ALUOptions.INC])
+            self.data_path.signal_latch_ar(
+                [ALUOptions.RIGHT_ZERO, ALUOptions.DEC if addr is Addressing.POST_INC else ALUOptions.INC]
+            )
             self.tick()
 
             self.data_path.signal_data_in()
@@ -164,27 +168,29 @@ class ControlUnit:
     def signal_latch_pc(self, sel: Opcode):
         if sel in {Opcode.JZ, Opcode.JBE, Opcode.JUMP, Opcode.JEV, Opcode.JNZ}:
             instr: Code = self.program_memory[self.pc]
-            assert instr.arg is not None, 'Internal error'
+            assert instr.arg is not None, "Internal error"
             self.pc = int(instr.arg) - 1
         elif sel is Opcode.IRET:
-            self.signal_latch_sp('-1')
+            self.signal_latch_sp("-1")
             self.pc = self.call_stack[self.sp]
         else:
             self.pc += 1
 
     def signal_latch_sp(self, sel):
-        if sel == '-1':
+        if sel == "-1":
             self.sp -= 1
-        elif sel == '+1':
+        elif sel == "+1":
             self.sp += 1
 
     def signal_cur_instr(self):
         self.data_path.cr = self.program_memory[self.pc]
 
     def decode_and_execute_control_flow_instruction(self, instr: Code):
-        assert instr.addressing not in {Addressing.POST_INC,
-                                        Addressing.POST_DEC,
-                                        Addressing.INDIRECT}, 'Control flow instruction addressing conflict'
+        assert instr.addressing not in {
+            Addressing.POST_INC,
+            Addressing.POST_DEC,
+            Addressing.INDIRECT,
+        }, "Control flow instruction addressing conflict"
         opcode: Opcode = Opcode(instr.opcode)
 
         if opcode is Opcode.HALT:
@@ -258,7 +264,7 @@ class ControlUnit:
             self.tick()
         elif opcode in {Opcode.IRET, Opcode.RET}:
             assert len(self.call_stack) > 0, "Internal error"
-            self.signal_latch_sp('-1')
+            self.signal_latch_sp("-1")
             self.tick()
 
             self.pc = self.call_stack[self.sp]
@@ -269,7 +275,7 @@ class ControlUnit:
             self.call_stack[self.sp] = self.pc
             self.tick()
 
-            self.signal_latch_sp('+1')
+            self.signal_latch_sp("+1")
             self.pc = int(instr.arg) - 1
             self.tick()
         elif opcode is Opcode.ADD:
@@ -282,15 +288,17 @@ class ControlUnit:
             self.data_path.acc = tmp
             self.tick()
         else:
-            raise ValueError(f"Invalid opcode {opcode}")
+            raise ValueError(f"{opcode}")
 
         self.handle_int()
 
     def __repr__(self):
-        state_repr = "TICK: {:3} PC: {:3} AR: {:3} MEM_OUT: {} ACC: {}".format(
+        state_repr = "TICK: {:3} PC: {:3} AR: {:3} DR {:3} SP {:3} MEM_OUT: {} ACC: {}".format(
             self._tick,
             self.pc,
             self.data_path.ar,
+            self.data_path.dr,
+            self.sp,
             self.data_path.data_memory[self.data_path.ar],
             self.data_path.acc,
         )
@@ -302,15 +310,19 @@ class ControlUnit:
         if instr.arg is not None:
             instr_repr += " {}".format(instr.arg)
 
-        return "{} \t{}".format(state_repr, instr_repr)
+        return "{} {}".format(state_repr, instr_repr)
 
     def handle_int(self):
-        if self.ei and len(self.data_path.input_buffer) > 0 and self.data_path.input_buffer[-1][0] <= self.current_tick():
+        if (
+            self.ei
+            and len(self.data_path.input_buffer) > 0
+            and self.data_path.input_buffer[-1][0] <= self.current_tick()
+        ):
             self.ei = False
             self.call_stack[self.sp] = self.pc
             self.tick()
 
-            self.signal_latch_sp('+1')
+            self.signal_latch_sp("+1")
             self.pc = int(self.program_memory[self.int_vec].arg) - 1
         self.signal_latch_pc(Opcode.NOP)
         self.tick()
@@ -337,13 +349,18 @@ def simulation(code, input_tokens, data_memory, data_memory_size, limit):
 
 
 def main(code_file, input_file):
-    with (open(code_file, encoding="utf-8") as file):
+    with open(code_file, encoding="utf-8") as file:
         code = json.loads(file.read())
-        machine_code = MachineCode(list(map(lambda d: Code(**d), code['code'])), code['data'])
+        machine_code = MachineCode(list(map(lambda d: Code(**d), code["code"])), code["data"])
     with open(input_file, encoding="utf-8") as file:
         input_text = sorted(json.loads(file.read()), reverse=True)
 
-    simulation(machine_code.code, input_text, machine_code.data, DATA_MEMORY_SIZE, INSTR_LIMIT)
+    output, instr_counter, ticks = simulation(
+        machine_code.code, input_text, machine_code.data, DATA_MEMORY_SIZE, INSTR_LIMIT
+    )
+
+    print("".join(output))
+    print("instr_counter: ", instr_counter, "ticks:", ticks)
 
 
 if __name__ == "__main__":

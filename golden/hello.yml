@@ -1,0 +1,136 @@
+in_source: |-
+ BEGIN:
+     DI
+     LOAD #MSG
+     ST PTR
+ LOOP:
+     LOAD [PTR]+
+     JZ END
+     ST 0x001; OUT MEM
+     JUMP LOOP
+ END:
+     HALT
+ 
+ MSG:
+     WORD 72
+     WORD 101
+     WORD 108
+     WORD 108
+     WORD 111
+     WORD 0
+ PTR:
+     WORD 0
+in_stdin: |-
+ []
+out_code: |-
+ {
+     "code": [
+         {
+             "index": 0,
+             "opcode": "NOP",
+             "arg": null,
+             "addressing": 0
+         },
+         {
+             "index": 1,
+             "opcode": "NOP",
+             "arg": null,
+             "addressing": 0
+         },
+         {
+             "index": 2,
+             "opcode": "DI",
+             "arg": null,
+             "addressing": 5
+         },
+         {
+             "index": 3,
+             "opcode": "LOAD",
+             "arg": "4",
+             "addressing": 2
+         },
+         {
+             "index": 4,
+             "opcode": "ST",
+             "arg": "10",
+             "addressing": 0
+         },
+         {
+             "index": 5,
+             "opcode": "LOAD",
+             "arg": "10",
+             "addressing": 3
+         },
+         {
+             "index": 6,
+             "opcode": "JZ",
+             "arg": "9",
+             "addressing": 0
+         },
+         {
+             "index": 7,
+             "opcode": "ST",
+             "arg": "1",
+             "addressing": 0
+         },
+         {
+             "index": 8,
+             "opcode": "JUMP",
+             "arg": "5",
+             "addressing": 0
+         },
+         {
+             "index": 9,
+             "opcode": "HALT",
+             "arg": null,
+             "addressing": 5
+         }
+     ],
+     "data": [
+         72,
+         101,
+         108,
+         108,
+         111,
+         0,
+         0
+     ]
+ }
+out_stdout: |
+ source LoC: 1 code instr: 10
+ ============================================================
+ Hello
+ instr_counter:  25 ticks: 93
+out_log: |
+ DEBUG   machine:simulation    TICK:   0 PC:   2 AR:   0 DR   0 SP   0 MEM_OUT: 0 ACC: 0 DI
+ DEBUG   machine:simulation    TICK:   2 PC:   3 AR:   0 DR   0 SP   0 MEM_OUT: 0 ACC: 0 LOAD 4
+ DEBUG   machine:simulation    TICK:   5 PC:   4 AR:   0 DR   4 SP   0 MEM_OUT: 0 ACC: 4 ST 10
+ DEBUG   machine:simulation    TICK:   9 PC:   5 AR:  10 DR   4 SP   0 MEM_OUT: 4 ACC: 4 LOAD 10
+ DEBUG   machine:simulation    TICK:  16 PC:   6 AR:   4 DR  72 SP   0 MEM_OUT: 72 ACC: 72 JZ 9
+ DEBUG   machine:simulation    TICK:  18 PC:   7 AR:   4 DR  72 SP   0 MEM_OUT: 72 ACC: 72 ST 1
+ DEBUG   machine:signal_data_out output: 72
+ DEBUG   machine:simulation    TICK:  22 PC:   8 AR:   1 DR  72 SP   0 MEM_OUT: 72 ACC: 72 JUMP 5
+ DEBUG   machine:simulation    TICK:  24 PC:   5 AR:   1 DR  72 SP   0 MEM_OUT: 72 ACC: 72 LOAD 10
+ DEBUG   machine:simulation    TICK:  31 PC:   6 AR:   5 DR 101 SP   0 MEM_OUT: 101 ACC: 101 JZ 9
+ DEBUG   machine:simulation    TICK:  33 PC:   7 AR:   5 DR 101 SP   0 MEM_OUT: 101 ACC: 101 ST 1
+ DEBUG   machine:signal_data_out output: 101
+ DEBUG   machine:simulation    TICK:  37 PC:   8 AR:   1 DR 101 SP   0 MEM_OUT: 101 ACC: 101 JUMP 5
+ DEBUG   machine:simulation    TICK:  39 PC:   5 AR:   1 DR 101 SP   0 MEM_OUT: 101 ACC: 101 LOAD 10
+ DEBUG   machine:simulation    TICK:  46 PC:   6 AR:   6 DR 108 SP   0 MEM_OUT: 108 ACC: 108 JZ 9
+ DEBUG   machine:simulation    TICK:  48 PC:   7 AR:   6 DR 108 SP   0 MEM_OUT: 108 ACC: 108 ST 1
+ DEBUG   machine:signal_data_out output: 108
+ DEBUG   machine:simulation    TICK:  52 PC:   8 AR:   1 DR 108 SP   0 MEM_OUT: 108 ACC: 108 JUMP 5
+ DEBUG   machine:simulation    TICK:  54 PC:   5 AR:   1 DR 108 SP   0 MEM_OUT: 108 ACC: 108 LOAD 10
+ DEBUG   machine:simulation    TICK:  61 PC:   6 AR:   7 DR 108 SP   0 MEM_OUT: 108 ACC: 108 JZ 9
+ DEBUG   machine:simulation    TICK:  63 PC:   7 AR:   7 DR 108 SP   0 MEM_OUT: 108 ACC: 108 ST 1
+ DEBUG   machine:signal_data_out output: 108
+ DEBUG   machine:simulation    TICK:  67 PC:   8 AR:   1 DR 108 SP   0 MEM_OUT: 108 ACC: 108 JUMP 5
+ DEBUG   machine:simulation    TICK:  69 PC:   5 AR:   1 DR 108 SP   0 MEM_OUT: 108 ACC: 108 LOAD 10
+ DEBUG   machine:simulation    TICK:  76 PC:   6 AR:   8 DR 111 SP   0 MEM_OUT: 111 ACC: 111 JZ 9
+ DEBUG   machine:simulation    TICK:  78 PC:   7 AR:   8 DR 111 SP   0 MEM_OUT: 111 ACC: 111 ST 1
+ DEBUG   machine:signal_data_out output: 111
+ DEBUG   machine:simulation    TICK:  82 PC:   8 AR:   1 DR 111 SP   0 MEM_OUT: 111 ACC: 111 JUMP 5
+ DEBUG   machine:simulation    TICK:  84 PC:   5 AR:   1 DR 111 SP   0 MEM_OUT: 111 ACC: 111 LOAD 10
+ DEBUG   machine:simulation    TICK:  91 PC:   6 AR:   9 DR   0 SP   0 MEM_OUT: 0 ACC: 0 JZ 9
+ DEBUG   machine:simulation    TICK:  93 PC:   9 AR:   9 DR   0 SP   0 MEM_OUT: 0 ACC: 0 HALT
+ INFO    machine:simulation    output_buffer: 'Hello'

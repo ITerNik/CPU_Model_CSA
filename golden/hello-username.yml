@@ -1,0 +1,584 @@
+in_source: |-
+  VEC 0 INPUT_INT
+  
+  BEGIN:
+    DI
+    LOAD #MSG1
+    ST PTR
+    CALL PRINT
+    LOAD #NAME
+    ST PTR
+    EI
+    CALL INPUT_NAME
+    DI
+    LOAD #MSG2
+    ST PTR
+    CALL PRINT
+    LOAD #NAME
+    ST PTR
+    CALL PRINT
+    HALT
+  
+  PRINT:
+  LOOP:
+      LOAD [PTR]+
+  
+      JZ END
+      ST 1
+      JUMP LOOP
+  END:
+      RET
+  
+  INPUT_NAME:
+    JNZ INPUT_NAME
+    RET
+  
+  INPUT_INT:
+    LOAD 0
+    ST [PTR]+
+    IRET
+  
+  MSG1:
+      WORD 87 ; 'W'
+      WORD 104 ; 'h'
+      WORD 97 ; 'a'
+      WORD 116 ; 't'
+      WORD 39 ; '\''
+      WORD 115 ; 's'
+      WORD 32 ; ' '
+      WORD 121 ; 'y'
+      WORD 111 ; 'o'
+      WORD 117 ; 'u'
+      WORD 114 ; 'r'
+      WORD 32 ; ' '
+      WORD 110 ; 'n'
+      WORD 97 ; 'a'
+      WORD 109 ; 'm'
+      WORD 101 ; 'e'
+      WORD 44 ; ','
+      WORD 32 ; ' '
+      WORD 116 ; 't'
+      WORD 114 ; 'r'
+      WORD 97 ; 'a'
+      WORD 118 ; 'v'
+      WORD 101 ; 'e'
+      WORD 108 ; 'l'
+      WORD 108 ; 'l'
+      WORD 101 ; 'e'
+      WORD 114 ; 'r'
+      WORD 63 ; '?'
+      WORD 32 ; ' '
+      WORD 0
+  
+  MSG2:
+      WORD 72 ; 'H'
+      WORD 101 ; 'e'
+      WORD 108 ; 'l'
+      WORD 108 ; 'l'
+      WORD 111; 'o'
+      WORD 44 ; ','
+      WORD 32 ; ' '
+      WORD 0
+  
+  PTR:
+      WORD 0
+  NAME:
+      WORD 0
+in_stdin: |-
+ [[3, "N"], [5, "i"], [10, "k"], [11, "i"], [13, "t"], [14, "k"], [15, "a"], [20, "\u0000"]]
+out_code: |-
+  {
+      "code": [
+          {
+              "index": 0,
+              "opcode": "NOP",
+              "arg": "25",
+              "addressing": 0
+          },
+          {
+              "index": 1,
+              "opcode": "NOP",
+              "arg": null,
+              "addressing": 0
+          },
+          {
+              "index": 2,
+              "opcode": "DI",
+              "arg": null,
+              "addressing": 5
+          },
+          {
+              "index": 3,
+              "opcode": "LOAD",
+              "arg": "4",
+              "addressing": 2
+          },
+          {
+              "index": 4,
+              "opcode": "ST",
+              "arg": "42",
+              "addressing": 0
+          },
+          {
+              "index": 5,
+              "opcode": "CALL",
+              "arg": "18",
+              "addressing": 0
+          },
+          {
+              "index": 6,
+              "opcode": "LOAD",
+              "arg": "43",
+              "addressing": 2
+          },
+          {
+              "index": 7,
+              "opcode": "ST",
+              "arg": "42",
+              "addressing": 0
+          },
+          {
+              "index": 8,
+              "opcode": "EI",
+              "arg": null,
+              "addressing": 5
+          },
+          {
+              "index": 9,
+              "opcode": "CALL",
+              "arg": "23",
+              "addressing": 0
+          },
+          {
+              "index": 10,
+              "opcode": "DI",
+              "arg": null,
+              "addressing": 5
+          },
+          {
+              "index": 11,
+              "opcode": "LOAD",
+              "arg": "34",
+              "addressing": 2
+          },
+          {
+              "index": 12,
+              "opcode": "ST",
+              "arg": "42",
+              "addressing": 0
+          },
+          {
+              "index": 13,
+              "opcode": "CALL",
+              "arg": "18",
+              "addressing": 0
+          },
+          {
+              "index": 14,
+              "opcode": "LOAD",
+              "arg": "43",
+              "addressing": 2
+          },
+          {
+              "index": 15,
+              "opcode": "ST",
+              "arg": "42",
+              "addressing": 0
+          },
+          {
+              "index": 16,
+              "opcode": "CALL",
+              "arg": "18",
+              "addressing": 0
+          },
+          {
+              "index": 17,
+              "opcode": "HALT",
+              "arg": null,
+              "addressing": 5
+          },
+          {
+              "index": 18,
+              "opcode": "LOAD",
+              "arg": "42",
+              "addressing": 3
+          },
+          {
+              "index": 19,
+              "opcode": "JZ",
+              "arg": "22",
+              "addressing": 0
+          },
+          {
+              "index": 20,
+              "opcode": "ST",
+              "arg": "1",
+              "addressing": 0
+          },
+          {
+              "index": 21,
+              "opcode": "JUMP",
+              "arg": "18",
+              "addressing": 0
+          },
+          {
+              "index": 22,
+              "opcode": "RET",
+              "arg": null,
+              "addressing": 5
+          },
+          {
+              "index": 23,
+              "opcode": "JNZ",
+              "arg": "23",
+              "addressing": 0
+          },
+          {
+              "index": 24,
+              "opcode": "RET",
+              "arg": null,
+              "addressing": 5
+          },
+          {
+              "index": 25,
+              "opcode": "LOAD",
+              "arg": "0",
+              "addressing": 0
+          },
+          {
+              "index": 26,
+              "opcode": "ST",
+              "arg": "42",
+              "addressing": 3
+          },
+          {
+              "index": 27,
+              "opcode": "IRET",
+              "arg": null,
+              "addressing": 5
+          }
+      ],
+      "data": [
+          87,
+          104,
+          97,
+          116,
+          39,
+          115,
+          32,
+          121,
+          111,
+          117,
+          114,
+          32,
+          110,
+          97,
+          109,
+          101,
+          44,
+          32,
+          116,
+          114,
+          97,
+          118,
+          101,
+          108,
+          108,
+          101,
+          114,
+          63,
+          32,
+          0,
+          72,
+          101,
+          108,
+          108,
+          111,
+          44,
+          32,
+          0,
+          0,
+          0
+      ]
+  }
+out_stdout: |
+ source LoC: 1 code instr: 28
+ ============================================================
+ What's your name, traveller? Hello, Nikitka
+ instr_counter:  222 ticks: 860
+out_log: |
+  DEBUG   machine:simulation    TICK:   0 PC:   2 AR:   0 DR   0 SP   0 MEM_OUT: 0 ACC: 0 DI
+  DEBUG   machine:simulation    TICK:   2 PC:   3 AR:   0 DR   0 SP   0 MEM_OUT: 0 ACC: 0 LOAD 4
+  DEBUG   machine:simulation    TICK:   5 PC:   4 AR:   0 DR   4 SP   0 MEM_OUT: 0 ACC: 4 ST 42
+  DEBUG   machine:simulation    TICK:   9 PC:   5 AR:  42 DR   4 SP   0 MEM_OUT: 4 ACC: 4 CALL 18
+  DEBUG   machine:simulation    TICK:  14 PC:  18 AR:  18 DR 109 SP   1 MEM_OUT: 109 ACC: 4 LOAD 42
+  DEBUG   machine:simulation    TICK:  21 PC:  19 AR:   4 DR  87 SP   1 MEM_OUT: 87 ACC: 87 JZ 22
+  DEBUG   machine:simulation    TICK:  23 PC:  20 AR:   4 DR  87 SP   1 MEM_OUT: 87 ACC: 87 ST 1
+  DEBUG   machine:signal_data_out output: 87
+  DEBUG   machine:simulation    TICK:  27 PC:  21 AR:   1 DR  87 SP   1 MEM_OUT: 87 ACC: 87 JUMP 18
+  DEBUG   machine:simulation    TICK:  29 PC:  18 AR:   1 DR  87 SP   1 MEM_OUT: 87 ACC: 87 LOAD 42
+  DEBUG   machine:simulation    TICK:  36 PC:  19 AR:   5 DR 104 SP   1 MEM_OUT: 104 ACC: 104 JZ 22
+  DEBUG   machine:simulation    TICK:  38 PC:  20 AR:   5 DR 104 SP   1 MEM_OUT: 104 ACC: 104 ST 1
+  DEBUG   machine:signal_data_out output: 104
+  DEBUG   machine:simulation    TICK:  42 PC:  21 AR:   1 DR 104 SP   1 MEM_OUT: 104 ACC: 104 JUMP 18
+  DEBUG   machine:simulation    TICK:  44 PC:  18 AR:   1 DR 104 SP   1 MEM_OUT: 104 ACC: 104 LOAD 42
+  DEBUG   machine:simulation    TICK:  51 PC:  19 AR:   6 DR  97 SP   1 MEM_OUT: 97 ACC: 97 JZ 22
+  DEBUG   machine:simulation    TICK:  53 PC:  20 AR:   6 DR  97 SP   1 MEM_OUT: 97 ACC: 97 ST 1
+  DEBUG   machine:signal_data_out output: 97
+  DEBUG   machine:simulation    TICK:  57 PC:  21 AR:   1 DR  97 SP   1 MEM_OUT: 97 ACC: 97 JUMP 18
+  DEBUG   machine:simulation    TICK:  59 PC:  18 AR:   1 DR  97 SP   1 MEM_OUT: 97 ACC: 97 LOAD 42
+  DEBUG   machine:simulation    TICK:  66 PC:  19 AR:   7 DR 116 SP   1 MEM_OUT: 116 ACC: 116 JZ 22
+  DEBUG   machine:simulation    TICK:  68 PC:  20 AR:   7 DR 116 SP   1 MEM_OUT: 116 ACC: 116 ST 1
+  DEBUG   machine:signal_data_out output: 116
+  DEBUG   machine:simulation    TICK:  72 PC:  21 AR:   1 DR 116 SP   1 MEM_OUT: 116 ACC: 116 JUMP 18
+  DEBUG   machine:simulation    TICK:  74 PC:  18 AR:   1 DR 116 SP   1 MEM_OUT: 116 ACC: 116 LOAD 42
+  DEBUG   machine:simulation    TICK:  81 PC:  19 AR:   8 DR  39 SP   1 MEM_OUT: 39 ACC: 39 JZ 22
+  DEBUG   machine:simulation    TICK:  83 PC:  20 AR:   8 DR  39 SP   1 MEM_OUT: 39 ACC: 39 ST 1
+  DEBUG   machine:signal_data_out output: 39
+  DEBUG   machine:simulation    TICK:  87 PC:  21 AR:   1 DR  39 SP   1 MEM_OUT: 39 ACC: 39 JUMP 18
+  DEBUG   machine:simulation    TICK:  89 PC:  18 AR:   1 DR  39 SP   1 MEM_OUT: 39 ACC: 39 LOAD 42
+  DEBUG   machine:simulation    TICK:  96 PC:  19 AR:   9 DR 115 SP   1 MEM_OUT: 115 ACC: 115 JZ 22
+  DEBUG   machine:simulation    TICK:  98 PC:  20 AR:   9 DR 115 SP   1 MEM_OUT: 115 ACC: 115 ST 1
+  DEBUG   machine:signal_data_out output: 115
+  DEBUG   machine:simulation    TICK: 102 PC:  21 AR:   1 DR 115 SP   1 MEM_OUT: 115 ACC: 115 JUMP 18
+  DEBUG   machine:simulation    TICK: 104 PC:  18 AR:   1 DR 115 SP   1 MEM_OUT: 115 ACC: 115 LOAD 42
+  DEBUG   machine:simulation    TICK: 111 PC:  19 AR:  10 DR  32 SP   1 MEM_OUT: 32 ACC: 32 JZ 22
+  DEBUG   machine:simulation    TICK: 113 PC:  20 AR:  10 DR  32 SP   1 MEM_OUT: 32 ACC: 32 ST 1
+  DEBUG   machine:signal_data_out output: 32
+  DEBUG   machine:simulation    TICK: 117 PC:  21 AR:   1 DR  32 SP   1 MEM_OUT: 32 ACC: 32 JUMP 18
+  DEBUG   machine:simulation    TICK: 119 PC:  18 AR:   1 DR  32 SP   1 MEM_OUT: 32 ACC: 32 LOAD 42
+  DEBUG   machine:simulation    TICK: 126 PC:  19 AR:  11 DR 121 SP   1 MEM_OUT: 121 ACC: 121 JZ 22
+  DEBUG   machine:simulation    TICK: 128 PC:  20 AR:  11 DR 121 SP   1 MEM_OUT: 121 ACC: 121 ST 1
+  DEBUG   machine:signal_data_out output: 121
+  DEBUG   machine:simulation    TICK: 132 PC:  21 AR:   1 DR 121 SP   1 MEM_OUT: 121 ACC: 121 JUMP 18
+  DEBUG   machine:simulation    TICK: 134 PC:  18 AR:   1 DR 121 SP   1 MEM_OUT: 121 ACC: 121 LOAD 42
+  DEBUG   machine:simulation    TICK: 141 PC:  19 AR:  12 DR 111 SP   1 MEM_OUT: 111 ACC: 111 JZ 22
+  DEBUG   machine:simulation    TICK: 143 PC:  20 AR:  12 DR 111 SP   1 MEM_OUT: 111 ACC: 111 ST 1
+  DEBUG   machine:signal_data_out output: 111
+  DEBUG   machine:simulation    TICK: 147 PC:  21 AR:   1 DR 111 SP   1 MEM_OUT: 111 ACC: 111 JUMP 18
+  DEBUG   machine:simulation    TICK: 149 PC:  18 AR:   1 DR 111 SP   1 MEM_OUT: 111 ACC: 111 LOAD 42
+  DEBUG   machine:simulation    TICK: 156 PC:  19 AR:  13 DR 117 SP   1 MEM_OUT: 117 ACC: 117 JZ 22
+  DEBUG   machine:simulation    TICK: 158 PC:  20 AR:  13 DR 117 SP   1 MEM_OUT: 117 ACC: 117 ST 1
+  DEBUG   machine:signal_data_out output: 117
+  DEBUG   machine:simulation    TICK: 162 PC:  21 AR:   1 DR 117 SP   1 MEM_OUT: 117 ACC: 117 JUMP 18
+  DEBUG   machine:simulation    TICK: 164 PC:  18 AR:   1 DR 117 SP   1 MEM_OUT: 117 ACC: 117 LOAD 42
+  DEBUG   machine:simulation    TICK: 171 PC:  19 AR:  14 DR 114 SP   1 MEM_OUT: 114 ACC: 114 JZ 22
+  DEBUG   machine:simulation    TICK: 173 PC:  20 AR:  14 DR 114 SP   1 MEM_OUT: 114 ACC: 114 ST 1
+  DEBUG   machine:signal_data_out output: 114
+  DEBUG   machine:simulation    TICK: 177 PC:  21 AR:   1 DR 114 SP   1 MEM_OUT: 114 ACC: 114 JUMP 18
+  DEBUG   machine:simulation    TICK: 179 PC:  18 AR:   1 DR 114 SP   1 MEM_OUT: 114 ACC: 114 LOAD 42
+  DEBUG   machine:simulation    TICK: 186 PC:  19 AR:  15 DR  32 SP   1 MEM_OUT: 32 ACC: 32 JZ 22
+  DEBUG   machine:simulation    TICK: 188 PC:  20 AR:  15 DR  32 SP   1 MEM_OUT: 32 ACC: 32 ST 1
+  DEBUG   machine:signal_data_out output: 32
+  DEBUG   machine:simulation    TICK: 192 PC:  21 AR:   1 DR  32 SP   1 MEM_OUT: 32 ACC: 32 JUMP 18
+  DEBUG   machine:simulation    TICK: 194 PC:  18 AR:   1 DR  32 SP   1 MEM_OUT: 32 ACC: 32 LOAD 42
+  DEBUG   machine:simulation    TICK: 201 PC:  19 AR:  16 DR 110 SP   1 MEM_OUT: 110 ACC: 110 JZ 22
+  DEBUG   machine:simulation    TICK: 203 PC:  20 AR:  16 DR 110 SP   1 MEM_OUT: 110 ACC: 110 ST 1
+  DEBUG   machine:signal_data_out output: 110
+  DEBUG   machine:simulation    TICK: 207 PC:  21 AR:   1 DR 110 SP   1 MEM_OUT: 110 ACC: 110 JUMP 18
+  DEBUG   machine:simulation    TICK: 209 PC:  18 AR:   1 DR 110 SP   1 MEM_OUT: 110 ACC: 110 LOAD 42
+  DEBUG   machine:simulation    TICK: 216 PC:  19 AR:  17 DR  97 SP   1 MEM_OUT: 97 ACC: 97 JZ 22
+  DEBUG   machine:simulation    TICK: 218 PC:  20 AR:  17 DR  97 SP   1 MEM_OUT: 97 ACC: 97 ST 1
+  DEBUG   machine:signal_data_out output: 97
+  DEBUG   machine:simulation    TICK: 222 PC:  21 AR:   1 DR  97 SP   1 MEM_OUT: 97 ACC: 97 JUMP 18
+  DEBUG   machine:simulation    TICK: 224 PC:  18 AR:   1 DR  97 SP   1 MEM_OUT: 97 ACC: 97 LOAD 42
+  DEBUG   machine:simulation    TICK: 231 PC:  19 AR:  18 DR 109 SP   1 MEM_OUT: 109 ACC: 109 JZ 22
+  DEBUG   machine:simulation    TICK: 233 PC:  20 AR:  18 DR 109 SP   1 MEM_OUT: 109 ACC: 109 ST 1
+  DEBUG   machine:signal_data_out output: 109
+  DEBUG   machine:simulation    TICK: 237 PC:  21 AR:   1 DR 109 SP   1 MEM_OUT: 109 ACC: 109 JUMP 18
+  DEBUG   machine:simulation    TICK: 239 PC:  18 AR:   1 DR 109 SP   1 MEM_OUT: 109 ACC: 109 LOAD 42
+  DEBUG   machine:simulation    TICK: 246 PC:  19 AR:  19 DR 101 SP   1 MEM_OUT: 101 ACC: 101 JZ 22
+  DEBUG   machine:simulation    TICK: 248 PC:  20 AR:  19 DR 101 SP   1 MEM_OUT: 101 ACC: 101 ST 1
+  DEBUG   machine:signal_data_out output: 101
+  DEBUG   machine:simulation    TICK: 252 PC:  21 AR:   1 DR 101 SP   1 MEM_OUT: 101 ACC: 101 JUMP 18
+  DEBUG   machine:simulation    TICK: 254 PC:  18 AR:   1 DR 101 SP   1 MEM_OUT: 101 ACC: 101 LOAD 42
+  DEBUG   machine:simulation    TICK: 261 PC:  19 AR:  20 DR  44 SP   1 MEM_OUT: 44 ACC: 44 JZ 22
+  DEBUG   machine:simulation    TICK: 263 PC:  20 AR:  20 DR  44 SP   1 MEM_OUT: 44 ACC: 44 ST 1
+  DEBUG   machine:signal_data_out output: 44
+  DEBUG   machine:simulation    TICK: 267 PC:  21 AR:   1 DR  44 SP   1 MEM_OUT: 44 ACC: 44 JUMP 18
+  DEBUG   machine:simulation    TICK: 269 PC:  18 AR:   1 DR  44 SP   1 MEM_OUT: 44 ACC: 44 LOAD 42
+  DEBUG   machine:simulation    TICK: 276 PC:  19 AR:  21 DR  32 SP   1 MEM_OUT: 32 ACC: 32 JZ 22
+  DEBUG   machine:simulation    TICK: 278 PC:  20 AR:  21 DR  32 SP   1 MEM_OUT: 32 ACC: 32 ST 1
+  DEBUG   machine:signal_data_out output: 32
+  DEBUG   machine:simulation    TICK: 282 PC:  21 AR:   1 DR  32 SP   1 MEM_OUT: 32 ACC: 32 JUMP 18
+  DEBUG   machine:simulation    TICK: 284 PC:  18 AR:   1 DR  32 SP   1 MEM_OUT: 32 ACC: 32 LOAD 42
+  DEBUG   machine:simulation    TICK: 291 PC:  19 AR:  22 DR 116 SP   1 MEM_OUT: 116 ACC: 116 JZ 22
+  DEBUG   machine:simulation    TICK: 293 PC:  20 AR:  22 DR 116 SP   1 MEM_OUT: 116 ACC: 116 ST 1
+  DEBUG   machine:signal_data_out output: 116
+  DEBUG   machine:simulation    TICK: 297 PC:  21 AR:   1 DR 116 SP   1 MEM_OUT: 116 ACC: 116 JUMP 18
+  DEBUG   machine:simulation    TICK: 299 PC:  18 AR:   1 DR 116 SP   1 MEM_OUT: 116 ACC: 116 LOAD 42
+  DEBUG   machine:simulation    TICK: 306 PC:  19 AR:  23 DR 114 SP   1 MEM_OUT: 114 ACC: 114 JZ 22
+  DEBUG   machine:simulation    TICK: 308 PC:  20 AR:  23 DR 114 SP   1 MEM_OUT: 114 ACC: 114 ST 1
+  DEBUG   machine:signal_data_out output: 114
+  DEBUG   machine:simulation    TICK: 312 PC:  21 AR:   1 DR 114 SP   1 MEM_OUT: 114 ACC: 114 JUMP 18
+  DEBUG   machine:simulation    TICK: 314 PC:  18 AR:   1 DR 114 SP   1 MEM_OUT: 114 ACC: 114 LOAD 42
+  DEBUG   machine:simulation    TICK: 321 PC:  19 AR:  24 DR  97 SP   1 MEM_OUT: 97 ACC: 97 JZ 22
+  DEBUG   machine:simulation    TICK: 323 PC:  20 AR:  24 DR  97 SP   1 MEM_OUT: 97 ACC: 97 ST 1
+  DEBUG   machine:signal_data_out output: 97
+  DEBUG   machine:simulation    TICK: 327 PC:  21 AR:   1 DR  97 SP   1 MEM_OUT: 97 ACC: 97 JUMP 18
+  DEBUG   machine:simulation    TICK: 329 PC:  18 AR:   1 DR  97 SP   1 MEM_OUT: 97 ACC: 97 LOAD 42
+  DEBUG   machine:simulation    TICK: 336 PC:  19 AR:  25 DR 118 SP   1 MEM_OUT: 118 ACC: 118 JZ 22
+  DEBUG   machine:simulation    TICK: 338 PC:  20 AR:  25 DR 118 SP   1 MEM_OUT: 118 ACC: 118 ST 1
+  DEBUG   machine:signal_data_out output: 118
+  DEBUG   machine:simulation    TICK: 342 PC:  21 AR:   1 DR 118 SP   1 MEM_OUT: 118 ACC: 118 JUMP 18
+  DEBUG   machine:simulation    TICK: 344 PC:  18 AR:   1 DR 118 SP   1 MEM_OUT: 118 ACC: 118 LOAD 42
+  DEBUG   machine:simulation    TICK: 351 PC:  19 AR:  26 DR 101 SP   1 MEM_OUT: 101 ACC: 101 JZ 22
+  DEBUG   machine:simulation    TICK: 353 PC:  20 AR:  26 DR 101 SP   1 MEM_OUT: 101 ACC: 101 ST 1
+  DEBUG   machine:signal_data_out output: 101
+  DEBUG   machine:simulation    TICK: 357 PC:  21 AR:   1 DR 101 SP   1 MEM_OUT: 101 ACC: 101 JUMP 18
+  DEBUG   machine:simulation    TICK: 359 PC:  18 AR:   1 DR 101 SP   1 MEM_OUT: 101 ACC: 101 LOAD 42
+  DEBUG   machine:simulation    TICK: 366 PC:  19 AR:  27 DR 108 SP   1 MEM_OUT: 108 ACC: 108 JZ 22
+  DEBUG   machine:simulation    TICK: 368 PC:  20 AR:  27 DR 108 SP   1 MEM_OUT: 108 ACC: 108 ST 1
+  DEBUG   machine:signal_data_out output: 108
+  DEBUG   machine:simulation    TICK: 372 PC:  21 AR:   1 DR 108 SP   1 MEM_OUT: 108 ACC: 108 JUMP 18
+  DEBUG   machine:simulation    TICK: 374 PC:  18 AR:   1 DR 108 SP   1 MEM_OUT: 108 ACC: 108 LOAD 42
+  DEBUG   machine:simulation    TICK: 381 PC:  19 AR:  28 DR 108 SP   1 MEM_OUT: 108 ACC: 108 JZ 22
+  DEBUG   machine:simulation    TICK: 383 PC:  20 AR:  28 DR 108 SP   1 MEM_OUT: 108 ACC: 108 ST 1
+  DEBUG   machine:signal_data_out output: 108
+  DEBUG   machine:simulation    TICK: 387 PC:  21 AR:   1 DR 108 SP   1 MEM_OUT: 108 ACC: 108 JUMP 18
+  DEBUG   machine:simulation    TICK: 389 PC:  18 AR:   1 DR 108 SP   1 MEM_OUT: 108 ACC: 108 LOAD 42
+  DEBUG   machine:simulation    TICK: 396 PC:  19 AR:  29 DR 101 SP   1 MEM_OUT: 101 ACC: 101 JZ 22
+  DEBUG   machine:simulation    TICK: 398 PC:  20 AR:  29 DR 101 SP   1 MEM_OUT: 101 ACC: 101 ST 1
+  DEBUG   machine:signal_data_out output: 101
+  DEBUG   machine:simulation    TICK: 402 PC:  21 AR:   1 DR 101 SP   1 MEM_OUT: 101 ACC: 101 JUMP 18
+  DEBUG   machine:simulation    TICK: 404 PC:  18 AR:   1 DR 101 SP   1 MEM_OUT: 101 ACC: 101 LOAD 42
+  DEBUG   machine:simulation    TICK: 411 PC:  19 AR:  30 DR 114 SP   1 MEM_OUT: 114 ACC: 114 JZ 22
+  DEBUG   machine:simulation    TICK: 413 PC:  20 AR:  30 DR 114 SP   1 MEM_OUT: 114 ACC: 114 ST 1
+  DEBUG   machine:signal_data_out output: 114
+  DEBUG   machine:simulation    TICK: 417 PC:  21 AR:   1 DR 114 SP   1 MEM_OUT: 114 ACC: 114 JUMP 18
+  DEBUG   machine:simulation    TICK: 419 PC:  18 AR:   1 DR 114 SP   1 MEM_OUT: 114 ACC: 114 LOAD 42
+  DEBUG   machine:simulation    TICK: 426 PC:  19 AR:  31 DR  63 SP   1 MEM_OUT: 63 ACC: 63 JZ 22
+  DEBUG   machine:simulation    TICK: 428 PC:  20 AR:  31 DR  63 SP   1 MEM_OUT: 63 ACC: 63 ST 1
+  DEBUG   machine:signal_data_out output: 63
+  DEBUG   machine:simulation    TICK: 432 PC:  21 AR:   1 DR  63 SP   1 MEM_OUT: 63 ACC: 63 JUMP 18
+  DEBUG   machine:simulation    TICK: 434 PC:  18 AR:   1 DR  63 SP   1 MEM_OUT: 63 ACC: 63 LOAD 42
+  DEBUG   machine:simulation    TICK: 441 PC:  19 AR:  32 DR  32 SP   1 MEM_OUT: 32 ACC: 32 JZ 22
+  DEBUG   machine:simulation    TICK: 443 PC:  20 AR:  32 DR  32 SP   1 MEM_OUT: 32 ACC: 32 ST 1
+  DEBUG   machine:signal_data_out output: 32
+  DEBUG   machine:simulation    TICK: 447 PC:  21 AR:   1 DR  32 SP   1 MEM_OUT: 32 ACC: 32 JUMP 18
+  DEBUG   machine:simulation    TICK: 449 PC:  18 AR:   1 DR  32 SP   1 MEM_OUT: 32 ACC: 32 LOAD 42
+  DEBUG   machine:simulation    TICK: 456 PC:  19 AR:  33 DR   0 SP   1 MEM_OUT: 0 ACC: 0 JZ 22
+  DEBUG   machine:simulation    TICK: 458 PC:  22 AR:  33 DR   0 SP   1 MEM_OUT: 0 ACC: 0 RET
+  DEBUG   machine:simulation    TICK: 461 PC:   6 AR:  33 DR   0 SP   0 MEM_OUT: 0 ACC: 0 LOAD 43
+  DEBUG   machine:simulation    TICK: 464 PC:   7 AR:  33 DR  43 SP   0 MEM_OUT: 0 ACC: 43 ST 42
+  DEBUG   machine:simulation    TICK: 468 PC:   8 AR:  42 DR  43 SP   0 MEM_OUT: 43 ACC: 43 EI
+  DEBUG   machine:simulation    TICK: 471 PC:  25 AR:  42 DR  43 SP   1 MEM_OUT: 43 ACC: 43 LOAD 0
+  DEBUG   machine:signal_data_in input: 0
+  DEBUG   machine:simulation    TICK: 475 PC:  26 AR:   0 DR  78 SP   1 MEM_OUT: 0 ACC: 78 ST 42
+  DEBUG   machine:simulation    TICK: 482 PC:  27 AR:  43 DR  78 SP   1 MEM_OUT: 78 ACC: 78 IRET
+  DEBUG   machine:simulation    TICK: 486 PC:  25 AR:  43 DR  78 SP   1 MEM_OUT: 78 ACC: 78 LOAD 0
+  DEBUG   machine:signal_data_in input: 0
+  DEBUG   machine:simulation    TICK: 490 PC:  26 AR:   0 DR 105 SP   1 MEM_OUT: 0 ACC: 105 ST 42
+  DEBUG   machine:simulation    TICK: 497 PC:  27 AR:  44 DR 105 SP   1 MEM_OUT: 105 ACC: 105 IRET
+  DEBUG   machine:simulation    TICK: 501 PC:  25 AR:  44 DR 105 SP   1 MEM_OUT: 105 ACC: 105 LOAD 0
+  DEBUG   machine:signal_data_in input: 0
+  DEBUG   machine:simulation    TICK: 505 PC:  26 AR:   0 DR 107 SP   1 MEM_OUT: 0 ACC: 107 ST 42
+  DEBUG   machine:simulation    TICK: 512 PC:  27 AR:  45 DR 107 SP   1 MEM_OUT: 107 ACC: 107 IRET
+  DEBUG   machine:simulation    TICK: 516 PC:  25 AR:  45 DR 107 SP   1 MEM_OUT: 107 ACC: 107 LOAD 0
+  DEBUG   machine:signal_data_in input: 0
+  DEBUG   machine:simulation    TICK: 520 PC:  26 AR:   0 DR 105 SP   1 MEM_OUT: 0 ACC: 105 ST 42
+  DEBUG   machine:simulation    TICK: 527 PC:  27 AR:  46 DR 105 SP   1 MEM_OUT: 105 ACC: 105 IRET
+  DEBUG   machine:simulation    TICK: 531 PC:  25 AR:  46 DR 105 SP   1 MEM_OUT: 105 ACC: 105 LOAD 0
+  DEBUG   machine:signal_data_in input: 0
+  DEBUG   machine:simulation    TICK: 535 PC:  26 AR:   0 DR 116 SP   1 MEM_OUT: 0 ACC: 116 ST 42
+  DEBUG   machine:simulation    TICK: 542 PC:  27 AR:  47 DR 116 SP   1 MEM_OUT: 116 ACC: 116 IRET
+  DEBUG   machine:simulation    TICK: 546 PC:  25 AR:  47 DR 116 SP   1 MEM_OUT: 116 ACC: 116 LOAD 0
+  DEBUG   machine:signal_data_in input: 0
+  DEBUG   machine:simulation    TICK: 550 PC:  26 AR:   0 DR 107 SP   1 MEM_OUT: 0 ACC: 107 ST 42
+  DEBUG   machine:simulation    TICK: 557 PC:  27 AR:  48 DR 107 SP   1 MEM_OUT: 107 ACC: 107 IRET
+  DEBUG   machine:simulation    TICK: 561 PC:  25 AR:  48 DR 107 SP   1 MEM_OUT: 107 ACC: 107 LOAD 0
+  DEBUG   machine:signal_data_in input: 0
+  DEBUG   machine:simulation    TICK: 565 PC:  26 AR:   0 DR  97 SP   1 MEM_OUT: 0 ACC: 97 ST 42
+  DEBUG   machine:simulation    TICK: 572 PC:  27 AR:  49 DR  97 SP   1 MEM_OUT: 97 ACC: 97 IRET
+  DEBUG   machine:simulation    TICK: 576 PC:  25 AR:  49 DR  97 SP   1 MEM_OUT: 97 ACC: 97 LOAD 0
+  DEBUG   machine:signal_data_in input: 0
+  DEBUG   machine:simulation    TICK: 580 PC:  26 AR:   0 DR   0 SP   1 MEM_OUT: 0 ACC: 0 ST 42
+  DEBUG   machine:simulation    TICK: 587 PC:  27 AR:  50 DR   0 SP   1 MEM_OUT: 0 ACC: 0 IRET
+  DEBUG   machine:simulation    TICK: 590 PC:   9 AR:  50 DR   0 SP   0 MEM_OUT: 0 ACC: 0 CALL 23
+  DEBUG   machine:simulation    TICK: 595 PC:  23 AR:  23 DR 114 SP   1 MEM_OUT: 114 ACC: 0 JNZ 23
+  DEBUG   machine:simulation    TICK: 597 PC:  24 AR:  23 DR 114 SP   1 MEM_OUT: 114 ACC: 0 RET
+  DEBUG   machine:simulation    TICK: 600 PC:  10 AR:  23 DR 114 SP   0 MEM_OUT: 114 ACC: 0 DI
+  DEBUG   machine:simulation    TICK: 602 PC:  11 AR:  23 DR 114 SP   0 MEM_OUT: 114 ACC: 0 LOAD 34
+  DEBUG   machine:simulation    TICK: 605 PC:  12 AR:  23 DR  34 SP   0 MEM_OUT: 114 ACC: 34 ST 42
+  DEBUG   machine:simulation    TICK: 609 PC:  13 AR:  42 DR  34 SP   0 MEM_OUT: 34 ACC: 34 CALL 18
+  DEBUG   machine:simulation    TICK: 614 PC:  18 AR:  18 DR 109 SP   1 MEM_OUT: 109 ACC: 34 LOAD 42
+  DEBUG   machine:simulation    TICK: 621 PC:  19 AR:  34 DR  72 SP   1 MEM_OUT: 72 ACC: 72 JZ 22
+  DEBUG   machine:simulation    TICK: 623 PC:  20 AR:  34 DR  72 SP   1 MEM_OUT: 72 ACC: 72 ST 1
+  DEBUG   machine:signal_data_out output: 72
+  DEBUG   machine:simulation    TICK: 627 PC:  21 AR:   1 DR  72 SP   1 MEM_OUT: 72 ACC: 72 JUMP 18
+  DEBUG   machine:simulation    TICK: 629 PC:  18 AR:   1 DR  72 SP   1 MEM_OUT: 72 ACC: 72 LOAD 42
+  DEBUG   machine:simulation    TICK: 636 PC:  19 AR:  35 DR 101 SP   1 MEM_OUT: 101 ACC: 101 JZ 22
+  DEBUG   machine:simulation    TICK: 638 PC:  20 AR:  35 DR 101 SP   1 MEM_OUT: 101 ACC: 101 ST 1
+  DEBUG   machine:signal_data_out output: 101
+  DEBUG   machine:simulation    TICK: 642 PC:  21 AR:   1 DR 101 SP   1 MEM_OUT: 101 ACC: 101 JUMP 18
+  DEBUG   machine:simulation    TICK: 644 PC:  18 AR:   1 DR 101 SP   1 MEM_OUT: 101 ACC: 101 LOAD 42
+  DEBUG   machine:simulation    TICK: 651 PC:  19 AR:  36 DR 108 SP   1 MEM_OUT: 108 ACC: 108 JZ 22
+  DEBUG   machine:simulation    TICK: 653 PC:  20 AR:  36 DR 108 SP   1 MEM_OUT: 108 ACC: 108 ST 1
+  DEBUG   machine:signal_data_out output: 108
+  DEBUG   machine:simulation    TICK: 657 PC:  21 AR:   1 DR 108 SP   1 MEM_OUT: 108 ACC: 108 JUMP 18
+  DEBUG   machine:simulation    TICK: 659 PC:  18 AR:   1 DR 108 SP   1 MEM_OUT: 108 ACC: 108 LOAD 42
+  DEBUG   machine:simulation    TICK: 666 PC:  19 AR:  37 DR 108 SP   1 MEM_OUT: 108 ACC: 108 JZ 22
+  DEBUG   machine:simulation    TICK: 668 PC:  20 AR:  37 DR 108 SP   1 MEM_OUT: 108 ACC: 108 ST 1
+  DEBUG   machine:signal_data_out output: 108
+  DEBUG   machine:simulation    TICK: 672 PC:  21 AR:   1 DR 108 SP   1 MEM_OUT: 108 ACC: 108 JUMP 18
+  DEBUG   machine:simulation    TICK: 674 PC:  18 AR:   1 DR 108 SP   1 MEM_OUT: 108 ACC: 108 LOAD 42
+  DEBUG   machine:simulation    TICK: 681 PC:  19 AR:  38 DR 111 SP   1 MEM_OUT: 111 ACC: 111 JZ 22
+  DEBUG   machine:simulation    TICK: 683 PC:  20 AR:  38 DR 111 SP   1 MEM_OUT: 111 ACC: 111 ST 1
+  DEBUG   machine:signal_data_out output: 111
+  DEBUG   machine:simulation    TICK: 687 PC:  21 AR:   1 DR 111 SP   1 MEM_OUT: 111 ACC: 111 JUMP 18
+  DEBUG   machine:simulation    TICK: 689 PC:  18 AR:   1 DR 111 SP   1 MEM_OUT: 111 ACC: 111 LOAD 42
+  DEBUG   machine:simulation    TICK: 696 PC:  19 AR:  39 DR  44 SP   1 MEM_OUT: 44 ACC: 44 JZ 22
+  DEBUG   machine:simulation    TICK: 698 PC:  20 AR:  39 DR  44 SP   1 MEM_OUT: 44 ACC: 44 ST 1
+  DEBUG   machine:signal_data_out output: 44
+  DEBUG   machine:simulation    TICK: 702 PC:  21 AR:   1 DR  44 SP   1 MEM_OUT: 44 ACC: 44 JUMP 18
+  DEBUG   machine:simulation    TICK: 704 PC:  18 AR:   1 DR  44 SP   1 MEM_OUT: 44 ACC: 44 LOAD 42
+  DEBUG   machine:simulation    TICK: 711 PC:  19 AR:  40 DR  32 SP   1 MEM_OUT: 32 ACC: 32 JZ 22
+  DEBUG   machine:simulation    TICK: 713 PC:  20 AR:  40 DR  32 SP   1 MEM_OUT: 32 ACC: 32 ST 1
+  DEBUG   machine:signal_data_out output: 32
+  DEBUG   machine:simulation    TICK: 717 PC:  21 AR:   1 DR  32 SP   1 MEM_OUT: 32 ACC: 32 JUMP 18
+  DEBUG   machine:simulation    TICK: 719 PC:  18 AR:   1 DR  32 SP   1 MEM_OUT: 32 ACC: 32 LOAD 42
+  DEBUG   machine:simulation    TICK: 726 PC:  19 AR:  41 DR   0 SP   1 MEM_OUT: 0 ACC: 0 JZ 22
+  DEBUG   machine:simulation    TICK: 728 PC:  22 AR:  41 DR   0 SP   1 MEM_OUT: 0 ACC: 0 RET
+  DEBUG   machine:simulation    TICK: 731 PC:  14 AR:  41 DR   0 SP   0 MEM_OUT: 0 ACC: 0 LOAD 43
+  DEBUG   machine:simulation    TICK: 734 PC:  15 AR:  41 DR  43 SP   0 MEM_OUT: 0 ACC: 43 ST 42
+  DEBUG   machine:simulation    TICK: 738 PC:  16 AR:  42 DR  43 SP   0 MEM_OUT: 43 ACC: 43 CALL 18
+  DEBUG   machine:simulation    TICK: 743 PC:  18 AR:  18 DR 109 SP   1 MEM_OUT: 109 ACC: 43 LOAD 42
+  DEBUG   machine:simulation    TICK: 750 PC:  19 AR:  43 DR  78 SP   1 MEM_OUT: 78 ACC: 78 JZ 22
+  DEBUG   machine:simulation    TICK: 752 PC:  20 AR:  43 DR  78 SP   1 MEM_OUT: 78 ACC: 78 ST 1
+  DEBUG   machine:signal_data_out output: 78
+  DEBUG   machine:simulation    TICK: 756 PC:  21 AR:   1 DR  78 SP   1 MEM_OUT: 78 ACC: 78 JUMP 18
+  DEBUG   machine:simulation    TICK: 758 PC:  18 AR:   1 DR  78 SP   1 MEM_OUT: 78 ACC: 78 LOAD 42
+  DEBUG   machine:simulation    TICK: 765 PC:  19 AR:  44 DR 105 SP   1 MEM_OUT: 105 ACC: 105 JZ 22
+  DEBUG   machine:simulation    TICK: 767 PC:  20 AR:  44 DR 105 SP   1 MEM_OUT: 105 ACC: 105 ST 1
+  DEBUG   machine:signal_data_out output: 105
+  DEBUG   machine:simulation    TICK: 771 PC:  21 AR:   1 DR 105 SP   1 MEM_OUT: 105 ACC: 105 JUMP 18
+  DEBUG   machine:simulation    TICK: 773 PC:  18 AR:   1 DR 105 SP   1 MEM_OUT: 105 ACC: 105 LOAD 42
+  DEBUG   machine:simulation    TICK: 780 PC:  19 AR:  45 DR 107 SP   1 MEM_OUT: 107 ACC: 107 JZ 22
+  DEBUG   machine:simulation    TICK: 782 PC:  20 AR:  45 DR 107 SP   1 MEM_OUT: 107 ACC: 107 ST 1
+  DEBUG   machine:signal_data_out output: 107
+  DEBUG   machine:simulation    TICK: 786 PC:  21 AR:   1 DR 107 SP   1 MEM_OUT: 107 ACC: 107 JUMP 18
+  DEBUG   machine:simulation    TICK: 788 PC:  18 AR:   1 DR 107 SP   1 MEM_OUT: 107 ACC: 107 LOAD 42
+  DEBUG   machine:simulation    TICK: 795 PC:  19 AR:  46 DR 105 SP   1 MEM_OUT: 105 ACC: 105 JZ 22
+  DEBUG   machine:simulation    TICK: 797 PC:  20 AR:  46 DR 105 SP   1 MEM_OUT: 105 ACC: 105 ST 1
+  DEBUG   machine:signal_data_out output: 105
+  DEBUG   machine:simulation    TICK: 801 PC:  21 AR:   1 DR 105 SP   1 MEM_OUT: 105 ACC: 105 JUMP 18
+  DEBUG   machine:simulation    TICK: 803 PC:  18 AR:   1 DR 105 SP   1 MEM_OUT: 105 ACC: 105 LOAD 42
+  DEBUG   machine:simulation    TICK: 810 PC:  19 AR:  47 DR 116 SP   1 MEM_OUT: 116 ACC: 116 JZ 22
+  DEBUG   machine:simulation    TICK: 812 PC:  20 AR:  47 DR 116 SP   1 MEM_OUT: 116 ACC: 116 ST 1
+  DEBUG   machine:signal_data_out output: 116
+  DEBUG   machine:simulation    TICK: 816 PC:  21 AR:   1 DR 116 SP   1 MEM_OUT: 116 ACC: 116 JUMP 18
+  DEBUG   machine:simulation    TICK: 818 PC:  18 AR:   1 DR 116 SP   1 MEM_OUT: 116 ACC: 116 LOAD 42
+  DEBUG   machine:simulation    TICK: 825 PC:  19 AR:  48 DR 107 SP   1 MEM_OUT: 107 ACC: 107 JZ 22
+  DEBUG   machine:simulation    TICK: 827 PC:  20 AR:  48 DR 107 SP   1 MEM_OUT: 107 ACC: 107 ST 1
+  DEBUG   machine:signal_data_out output: 107
+  DEBUG   machine:simulation    TICK: 831 PC:  21 AR:   1 DR 107 SP   1 MEM_OUT: 107 ACC: 107 JUMP 18
+  DEBUG   machine:simulation    TICK: 833 PC:  18 AR:   1 DR 107 SP   1 MEM_OUT: 107 ACC: 107 LOAD 42
+  DEBUG   machine:simulation    TICK: 840 PC:  19 AR:  49 DR  97 SP   1 MEM_OUT: 97 ACC: 97 JZ 22
+  DEBUG   machine:simulation    TICK: 842 PC:  20 AR:  49 DR  97 SP   1 MEM_OUT: 97 ACC: 97 ST 1
+  DEBUG   machine:signal_data_out output: 97
+  DEBUG   machine:simulation    TICK: 846 PC:  21 AR:   1 DR  97 SP   1 MEM_OUT: 97 ACC: 97 JUMP 18
+  DEBUG   machine:simulation    TICK: 848 PC:  18 AR:   1 DR  97 SP   1 MEM_OUT: 97 ACC: 97 LOAD 42
+  DEBUG   machine:simulation    TICK: 855 PC:  19 AR:  50 DR   0 SP   1 MEM_OUT: 0 ACC: 0 JZ 22
+  DEBUG   machine:simulation    TICK: 857 PC:  22 AR:  50 DR   0 SP   1 MEM_OUT: 0 ACC: 0 RET
+  DEBUG   machine:simulation    TICK: 860 PC:  17 AR:  50 DR   0 SP   0 MEM_OUT: 0 ACC: 0 HALT
+  INFO    machine:simulation    output_buffer: "What's your name, traveller? Hello, Nikitka"

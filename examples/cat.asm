@@ -6,28 +6,32 @@ MSG:
     WORD 0
 
 BEGIN:
-    LOAD #MSG
-    ST PTR
-
-INPUT:
-    JNZ INPUT
-
-    CALL PRINT
-END:
-    HALT
-
-INPUT_INT:
-    LOAD 1 ; IN MEM
-    ST [PTR]+
-    IRET
+  DI
+  LOAD #MSG
+  ST PTR
+  EI
+  CALL INPUT
+  DI
+  LOAD #MSG
+  ST PTR
+  CALL PRINT
+  HALT
 
 PRINT:
-    LOAD #MSG
-    ST PTR
 LOOP:
     LOAD [PTR]+
 
     JZ END
-    ST 1 : OUT MEM
+    ST 1
     JUMP LOOP
+END:
     RET
+
+INPUT:
+  JNZ INPUT
+  RET
+
+INPUT_INT:
+  LOAD 0
+  ST [PTR]+
+  IRET

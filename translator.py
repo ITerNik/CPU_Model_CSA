@@ -1,7 +1,9 @@
+from __future__ import annotations
+
 import json
 import sys
 
-from isa import Code, Opcode, Addressing, MachineCode, MachineCodeEncoder
+from isa import Addressing, Code, MachineCode, MachineCodeEncoder, Opcode
 
 
 def translate(text: str):
@@ -11,11 +13,11 @@ def translate(text: str):
     words: dict[str, int] = {}
     prog_position: int = 2
     data_position: int = 4
-    last_label: str = ''
+    last_label: str = ""
 
     for line in text.splitlines():
-        token = line.split(';', 1)[0].strip()
-        if token == '':
+        token = line.split(";", 1)[0].strip()
+        if token == "":
             continue
 
         if token.endswith(":"):
@@ -26,7 +28,7 @@ def translate(text: str):
         elif token.startswith("WORD"):
             word = token[4:].strip()
             word_data = parse_number(word)
-            if last_label != '':
+            if last_label != "":
                 prog_position = labels[last_label]
                 if last_label not in words:
                     labels[last_label] = data_position
@@ -61,16 +63,16 @@ def second_stage(code: list[Code], labels: dict[str, int]):
         if instruction.arg is not None:
             label = instruction.arg
             addressing = Addressing.DIRECT
-            if label.startswith('['):
-                if label.endswith(']'):
+            if label.startswith("["):
+                if label.endswith("]"):
                     addressing = Addressing.INDIRECT
-                elif label.endswith(']+'):
+                elif label.endswith("]+"):
                     addressing = Addressing.POST_INC
-                elif label.endswith(']-'):
+                elif label.endswith("]-"):
                     addressing = Addressing.POST_DEC
-            elif label.startswith('#'):
+            elif label.startswith("#"):
                 addressing = Addressing.LOAD
-            label = label.strip('#[]+-')
+            label = label.strip("#[]+-")
             instruction.addressing = addressing.value
             try:
                 instruction.arg = str(parse_number(label))
@@ -83,10 +85,9 @@ def second_stage(code: list[Code], labels: dict[str, int]):
 
 
 def parse_number(label: str) -> int:
-    if label.startswith('0x'):
+    if label.startswith("0x"):
         return int(label[2:], 16)
-    else:
-        return int(label)
+    return int(label)
 
 
 def write_code(filename: str, code: MachineCode):
@@ -101,9 +102,10 @@ def main(source: str, target: str):
     code = translate(source_text)
 
     write_code(target, code)
+    print("source LoC:", len(source.split("\n")), "code instr:", len(code.code))
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     assert len(sys.argv) == 3, "Wrong arguments: translator.py <input_file> <target_file>"
     _, src, tar = sys.argv
     main(src, tar)

@@ -4,8 +4,10 @@ BEGIN:
     ST PTR
 LOOP:
     LOAD [PTR]+
+    JZ END
     ST 0x001; OUT MEM
-    JNZ LOOP
+    JUMP LOOP
+END:
     HALT
 
 MSG:
