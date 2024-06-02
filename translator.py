@@ -58,6 +58,7 @@ def translate(text: str):
             prog_position += 1
     return MachineCode(second_stage(code, labels), data)
 
+
 # flake8: noqa: C901
 def second_stage(code: list[Code], labels: dict[str, int]):
     for instruction in code:

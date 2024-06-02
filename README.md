@@ -240,3 +240,35 @@
   - исключении `StopIteration` - если выполнена инструкция `HALT`
 
 ## Тестирование
+Пример проверки исходного кода:
+```
+>> poetry run pytest . -v                        
+=============================================================== test session starts ===============================================================
+platform win32 -- Python 3.11.5, pytest-7.4.4, pluggy-1.5.0 -- C:\Users\terni\AppData\Local\pypoetry\Cache\virtualenvs\cpu_model-971P-bPT-py3.11\Scr
+ipts\python.exe
+cachedir: .pytest_cache
+rootdir: C:\Users\terni\PycharmProjects\CPU_Model_CSA
+configfile: pyproject.toml
+plugins: golden-0.2.2
+collected 4 items
+
+golden_test.py::test_translator_and_machine[golden/cat.yml] PASSED                                                                           [ 25%]
+golden_test.py::test_translator_and_machine[golden/even-fibonacci.yml] PASSED                                                                [ 50%]
+golden_test.py::test_translator_and_machine[golden/hello-username.yml] PASSED                                                                [ 75%]
+golden_test.py::test_translator_and_machine[golden/hello.yml] PASSED                                                                         [100%]
+
+================================================================ 4 passed in 0.24s ================================================================ 
+
+>> poetry run ruff check .
+>> poetry run ruff format .
+4 files left unchanged
+
+```
+## Результаты
+```
+|          ФИО             |      алг       | code интср. | инстр. | такт |                                     вариант                                        |
+| Терехин Никита Денисович | hello_world    | 10          | 25     | 93   | asm | acc | harv | hw | instr | struct | trap -> stream | mem | cstr | prob2 | spi |
+| Терехин Никита Денисович | hello_username | 28          | 222    | 860  | asm | acc | harv | hw | instr | struct | trap -> stream | mem | cstr | prob2 | spi |
+| Терехин Никита Денисович | cat            | 22          | 66     | 272  | asm | acc | harv | hw | instr | struct | trap -> stream | mem | cstr | prob2 | spi |
+| Терехин Никита Денисович | prob2          | 25          | 228    | 748  | asm | acc | harv | hw | instr | struct | trap -> stream | mem | cstr | prob2 | spi |
+```
