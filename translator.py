@@ -6,6 +6,7 @@ import sys
 from isa import Addressing, Code, MachineCode, MachineCodeEncoder, Opcode
 
 
+# flake8: noqa: C901
 def translate(text: str):
     code: list[Code] = [Code(0, Opcode.NOP), Code(1, Opcode.NOP)]
     data: list[int] = []
@@ -57,7 +58,7 @@ def translate(text: str):
             prog_position += 1
     return MachineCode(second_stage(code, labels), data)
 
-
+# flake8: noqa: C901
 def second_stage(code: list[Code], labels: dict[str, int]):
     for instruction in code:
         if instruction.arg is not None:

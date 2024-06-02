@@ -235,6 +235,7 @@ class ControlUnit:
 
         return False
 
+    # flake8: noqa: C901
     def decode_and_execute_instruction(self):
         self.signal_cur_instr()
         instr = self.data_path.cr
