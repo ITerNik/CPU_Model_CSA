@@ -6,6 +6,8 @@ from enum import Enum
 from isa import MachineCode, Code, Opcode, Addressing
 
 MEMORY_START = 4
+DATA_MEMORY_SIZE = 2**16
+INSTR_LIMIT = 500
 
 
 class ALUOptions(Enum):
@@ -29,8 +31,8 @@ class DataPath:
         self.input_buffer = input_buffer
         self.output_buffer = []
 
-    def signal_latch_ar(self, sel_cr=True, options=[]):
-        if sel_cr:
+    def signal_latch_ar(self, options=None):
+        if options is None:
             assert self.cr.arg is not None, 'Internal error'
             self.ar = int(self.cr.arg)
         else:
@@ -62,19 +64,24 @@ class DataPath:
 
     def signal_data_out(self):
         if self.ar == 1:
-            if 0 <= self.dr <= 256 :
+            if 0 <= self.dr <= 256:
                 self.output_buffer.append(chr(self.dr))
             else:
                 self.output_buffer.append(str(self.dr))
+            logging.debug("output: %s", repr(self.dr))
         self.data_memory[self.ar] = self.dr
-        # logging.debug("input: %s", repr(symbol))
 
     def signal_data_in(self):
-        self.signal_latch_dr()
-        # logging.debug("input: %s", repr(symbol))
+        if self.ar == 0:
+            if len(self.input_buffer) <= 0:
+                raise EOFError('End of input')
+            self.dr = ord(self.input_buffer.pop()[1])
+            logging.debug("input: %s", repr(self.data_memory[0]))
+        else:
+            self.signal_latch_dr()
 
-    def signal_latch_dr(self, options=[], select_data=True):
-        if select_data:
+    def signal_latch_dr(self, options=None):
+        if options is None:
             self.dr = self.data_memory[self.ar]
         else:
             self.dr = self.process_alu(options)
@@ -95,7 +102,7 @@ class ControlUnit:
         self.program_memory: list[Code] = program_memory
         self.pc = 2
         self.sp = 0
-        self.call_stack: list[int] = []
+        self.call_stack: list[int] = len(program_memory) * [0]
         self.data_path: DataPath = data_path
         self._tick = 0
         self.int_req = False
@@ -112,7 +119,7 @@ class ControlUnit:
         addr = Addressing(instr.addressing)
         if addr is Addressing.NONE:
             return
-        assert instr.arg is not None, 'Internal error'
+        assert instr.arg is not None, 'Internal error {} {}'.format(instr.opcode, instr.index)
         if addr is Addressing.DIRECT:
             self.data_path.signal_latch_ar()
             self.tick()
@@ -129,7 +136,7 @@ class ControlUnit:
             self.data_path.signal_data_in()
             self.tick()
 
-            self.data_path.signal_latch_ar(False, [ALUOptions.RIGHT_ZERO])
+            self.data_path.signal_latch_ar([ALUOptions.RIGHT_ZERO])
             self.tick()
 
             self.data_path.signal_data_in()
@@ -143,12 +150,11 @@ class ControlUnit:
             self.tick()
 
             self.data_path.signal_latch_dr([ALUOptions.RIGHT_ZERO,
-                                            ALUOptions.INC if addr is Addressing.POST_INC else ALUOptions.DEC],
-                                           select_data=False)
+                                            ALUOptions.INC if addr is Addressing.POST_INC else ALUOptions.DEC])
             self.tick()
 
             self.data_path.signal_data_out()
-            self.data_path.signal_latch_ar(False, [ALUOptions.RIGHT_ZERO,
+            self.data_path.signal_latch_ar([ALUOptions.RIGHT_ZERO,
                                                    ALUOptions.DEC if addr is Addressing.POST_INC else ALUOptions.INC])
             self.tick()
 
@@ -161,14 +167,15 @@ class ControlUnit:
             assert instr.arg is not None, 'Internal error'
             self.pc = int(instr.arg) - 1
         elif sel is Opcode.IRET:
-            self.pc = self.call_stack.pop()
+            self.signal_latch_sp('-1')
+            self.pc = self.call_stack[self.sp]
         else:
             self.pc += 1
 
     def signal_latch_sp(self, sel):
         if sel == '-1':
             self.sp -= 1
-        elif sel == '1':
+        elif sel == '+1':
             self.sp += 1
 
     def signal_cur_instr(self):
@@ -238,37 +245,49 @@ class ControlUnit:
             self.tick()
 
         elif opcode is Opcode.ST:
-            self.data_path.signal_latch_dr([ALUOptions.LEFT_ZERO], select_data=False)
+            self.data_path.signal_latch_dr([ALUOptions.LEFT_ZERO])
             self.data_path.signal_data_out()
             self.tick()
         elif opcode is Opcode.NOP:
             pass
         elif opcode is Opcode.DI:
             self.ei = False
+            self.tick()
         elif opcode is Opcode.EI:
             self.ei = True
+            self.tick()
         elif opcode in {Opcode.IRET, Opcode.RET}:
             assert len(self.call_stack) > 0, "Internal error"
-            self.pc = self.call_stack.pop()
+            self.signal_latch_sp('-1')
+            self.tick()
+
+            self.pc = self.call_stack[self.sp]
             if opcode is Opcode.IRET:
                 self.ei = True
+            self.tick()
         elif opcode is Opcode.CALL:
-            self.call_stack.append(self.pc)
+            self.call_stack[self.sp] = self.pc
+            self.tick()
+
+            self.signal_latch_sp('+1')
             self.pc = int(instr.arg) - 1
+            self.tick()
         elif opcode is Opcode.ADD:
             self.data_path.signal_latch_acc([])
+            self.tick()
         elif opcode is Opcode.CMP:
             tmp = self.data_path.acc
             self.data_path.signal_latch_acc([ALUOptions.NOT_LEFT, ALUOptions.INC])
             self.be = not self.data_path.negative()
             self.data_path.acc = tmp
+            self.tick()
         else:
             raise ValueError(f"Invalid opcode {opcode}")
 
         self.handle_int()
 
     def __repr__(self):
-        state_repr = "TICK: {:3} PC: {:3} ADDR: {:3} MEM_OUT: {} ACC: {}".format(
+        state_repr = "TICK: {:3} PC: {:3} AR: {:3} MEM_OUT: {} ACC: {}".format(
             self._tick,
             self.pc,
             self.data_path.ar,
@@ -280,23 +299,21 @@ class ControlUnit:
         opcode = instr.opcode
         instr_repr = str(opcode)
 
-        if "arg" in instr:
-            instr_repr += " {}".format(instr["arg"])
-
-        if "term" in instr:
-            term = instr["term"]
-            instr_repr += "  ('{}'@{}:{})".format(term.symbol, term.line, term.pos)
+        if instr.arg is not None:
+            instr_repr += " {}".format(instr.arg)
 
         return "{} \t{}".format(state_repr, instr_repr)
 
     def handle_int(self):
         if self.ei and len(self.data_path.input_buffer) > 0 and self.data_path.input_buffer[-1][0] <= self.current_tick():
-            self.int_vec = 0
-            self.data_path.data_memory[0] = ord(self.data_path.input_buffer.pop()[1])
             self.ei = False
-            self.call_stack.append(self.pc)
+            self.call_stack[self.sp] = self.pc
+            self.tick()
+
+            self.signal_latch_sp('+1')
             self.pc = int(self.program_memory[self.int_vec].arg) - 1
         self.signal_latch_pc(Opcode.NOP)
+        self.tick()
 
 
 def simulation(code, input_tokens, data_memory, data_memory_size, limit):
@@ -304,18 +321,18 @@ def simulation(code, input_tokens, data_memory, data_memory_size, limit):
     control_unit = ControlUnit(code, data_path)
     instr_counter = 0
 
-    # logging.debug("%s", control_unit)
+    logging.debug("%s", control_unit)
     try:
         while instr_counter < limit:
             control_unit.decode_and_execute_instruction()
             instr_counter += 1
-            # logging.debug("%s", control_unit)
+            logging.debug("%s", control_unit)
     except (StopIteration, EOFError):
         pass
 
     if instr_counter >= limit:
         logging.warning("Limit exceeded!")
-    # logging.info("output_buffer: %s", repr("".join(data_path.output_buffer)))
+    logging.info("output_buffer: %s", repr("".join(data_path.output_buffer)))
     return "".join(data_path.output_buffer), instr_counter, control_unit.current_tick()
 
 
@@ -326,7 +343,7 @@ def main(code_file, input_file):
     with open(input_file, encoding="utf-8") as file:
         input_text = sorted(json.loads(file.read()), reverse=True)
 
-    print(simulation(machine_code.code, input_text, machine_code.data, 256, 500))
+    simulation(machine_code.code, input_text, machine_code.data, DATA_MEMORY_SIZE, INSTR_LIMIT)
 
 
 if __name__ == "__main__":
