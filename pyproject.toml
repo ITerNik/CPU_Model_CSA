@@ -1,13 +1,13 @@
 [tool.poetry]
 name = "CPU Model"
 version = "0.1.1"
-description = "Project for SCA"
+description = "Project for CSA"
 authors = ["Terekhin Nikita <aleksandr.penskoi@gmail.com>"]
 license = "BSD"
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = "^3.11"
+python = "^3.9"
 
 [tool.poetry.group.dev.dependencies]
 coverage = "^7.2.7"
